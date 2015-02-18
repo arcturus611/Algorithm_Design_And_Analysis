@@ -1,5 +1,8 @@
 	/*
 	karger's min-cut algorithm
+	NOTES: 
+	2. Split code into files, please. This is ugly and unreadable.
+	3. Remove all printfs, please. 
 	*/
 	
 	#include<stdio.h>
@@ -35,8 +38,8 @@
 	};
 	
 	/* Global variables */
-	struct edge* edge_head = NULL; 
-	int edge_count = 0; 
+	struct edge* edge_list_head = NULL; 
+	int edge_list_count = 0; 
 	
 	/* Declaring all functions */
 	struct adj_list_node* new_adj_list_node(int);
@@ -44,10 +47,10 @@
 	struct graph* create_graph(int);
 	struct graph* read_graph(int); 
 	
-	void add_edge(struct graph*, int, int);
+	void add_edge_to_graph(struct graph*, int, int);
 	void delete_edge(struct graph*, int, int); 
 	
-	void create_edge_in_list(int, int);
+	void add_to_edge_list(int, int);
 	void delete_edge_in_list(int, int);
 	
 	void delete_node(struct graph*, int);
@@ -70,7 +73,7 @@
 
 	struct edge* new_edge(int e1, int e2){
 		struct edge* e = (struct edge *)malloc(sizeof(struct edge)); 
-		e->idx = edge_count; 
+		e->idx = edge_list_count; 
 		e->end1 = e1; 
 		e->end2 = e2; 
 		e->next = NULL;	
@@ -81,7 +84,8 @@
 		struct graph* new_graph = (struct graph *)malloc(sizeof(struct graph)); // line a
 		
 		new_graph->V = V;
-		new_graph->array = (struct adj_list *)malloc(V*sizeof(struct adj_list)); //what happens if you don;t do this? why is this required if we already have line a?
+		new_graph->array = (struct adj_list *)malloc(V*sizeof(struct adj_list)); 
+		//what happens if you don't do this? why is this required if we already have line a?
 		
 		for(int i = 0; i<V; i++){
 			new_graph->array[i].head = NULL; 
@@ -90,7 +94,7 @@
 		return new_graph;
 	}
 	
-	void add_edge(struct graph* G, int src, int sink){
+	void add_edge_to_graph(struct graph* G, int src, int sink){
 		//Adding a node to the neighbours list of src...
 		//...as long as src!=sink.
 		
@@ -109,8 +113,8 @@
 
 			//in the edge list, create an edge between source and sink
 			// (again, as long as it's not a self-loop)
-			if (src<=sink)	create_edge_in_list(src, sink); 
-			else create_edge_in_list(sink, src); 
+			if (src<=sink)	add_to_edge_list(src, sink); 
+			else add_to_edge_list(sink, src); 
 		}
 		
 		return;
@@ -172,17 +176,17 @@
 		return;
 	}
 
-	void create_edge_in_list(int e1, int e2){
+	void add_to_edge_list(int e1, int e2){
 		//printf("[CREATE EDGE IN LIST]\n"); 
 		
-		edge_count++;
+		edge_list_count++;
 			
-		if(edge_head == NULL){
-			edge_head = new_edge(e1, e2);
+		if(edge_list_head == NULL){
+			edge_list_head = new_edge(e1, e2);
 			return;
 		}
 		
-		struct edge* curr = edge_head; 
+		struct edge* curr = edge_list_head; 
 		struct edge* last = NULL; 
 		
 		while(curr){
@@ -202,22 +206,22 @@
 		
 		//printf("[DELETE EDGE IN LIST] Edge end points %d and %d\n", e1, e2); 
 		
-		if(edge_head==NULL) return; //no more edges left to be deleted
+		if(edge_list_head==NULL) return; //no more edges left to be deleted
 		
-		//check if edge to be deleted happens to be the edge_head
-		while((edge_head!=NULL) && (edge_head->end1 == e1) && (edge_head->end2==e2)){
-			temp = edge_head; 
-			edge_head = edge_head->next; 
+		//check if edge to be deleted happens to be the edge_list_head
+		while((edge_list_head!=NULL) && (edge_list_head->end1 == e1) && (edge_list_head->end2==e2)){
+			temp = edge_list_head; 
+			edge_list_head = edge_list_head->next; 
 			free(temp);
-			edge_count--;
-		//	printf("Post deletion edge count = %d\n", edge_count); 
+			edge_list_count--;
+		//	printf("Post deletion edge count = %d\n", edge_list_count); 
 		}
 		
 		//if edge to be deleted is somewhere down the linked list of edges...	
-		if(edge_head==NULL) return; 
+		if(edge_list_head==NULL) return; 
 		else{
-			temp = edge_head; 
-			curr = edge_head->next; 
+			temp = edge_list_head; 
+			curr = edge_list_head->next; 
 		}
 		
 		while(curr){
@@ -230,8 +234,8 @@
 				temp->next = curr->next; 
 				free(curr);
 				curr = temp->next; 
-				edge_count--; 
-			//	printf("Post deletion edge count is %d\n", edge_count); 
+				edge_list_count--; 
+			//	printf("Post deletion edge count is %d\n", edge_list_count); 
 			}else{
 				temp = curr; 
 				curr = curr->next; 
@@ -266,7 +270,7 @@
 			else 
 				delete_edge_in_list(curr_idx, del); 
 				
-			//print_edge_list(edge_head); 
+			//print_edge_list(edge_list_head); 
 			
 			curr = G->array[del].head; 
 		}
@@ -344,7 +348,7 @@
 		//and merge sink into src
 		
 		//Step 0: Get edge end points
-		struct edge* e = edge_head; 
+		struct edge* e = edge_list_head; 
 		int src, sink;
 		int count = 1; 
 		
@@ -363,18 +367,18 @@
 		struct adj_list_node* curr_sink = G->array[sink].head; 
 		
 		while(curr_sink){
-			add_edge(G, src, curr_sink->idx);
+			add_edge_to_graph(G, src, curr_sink->idx);
 			curr_sink = curr_sink->next;
 		}
-		//printf("[EDGE CONTRACTION] Contracted edge %d; current edge count is %d\n", edge_idx, edge_count);
+		//printf("[EDGE CONTRACTION] Contracted edge %d; current edge count is %d\n", edge_idx, edge_list_count);
 		//print_graph(G);
-		//print_edge_list(edge_head); 
+		//print_edge_list(edge_list_head); 
 		
 		//Step 2: null-ify the node
 		delete_node(G, sink); 
-		//printf("[EDGE CONTRACTION] Nullified sink %d; current edge count is %d\n", sink, edge_count);
+		//printf("[EDGE CONTRACTION] Nullified sink %d; current edge count is %d\n", sink, edge_list_count);
 		//print_graph(G); 
-		//print_edge_list(edge_head); 
+		//print_edge_list(edge_list_head); 
 		
 		return;
 	}
@@ -382,22 +386,22 @@
 	int karger_min_cut(struct graph* G, int V){
 		//printf("[KARGER MIN CUT] Before we begin, the graph and edge list are \n");
 		//print_graph(G); 
-		//print_edge_list(edge_head);
+		//print_edge_list(edge_list_head);
 		
 		int edge_idx, min_cut;
 		
 		for(int i = 1; i<=V-2; i++){
 			//pick a random edge
-			edge_idx = rand()%edge_count + 1;
+			edge_idx = rand()%edge_list_count + 1;
 			
 			//do edge_contraction
 			edge_contraction(G, edge_idx); 
 		}	
 		 
 		//print_graph(G);
-		//print_edge_list(edge_head); 
+		//print_edge_list(edge_list_head); 
 		
-		min_cut = edge_count; 
+		min_cut = edge_list_count; 
 		
 		//printf("The min cut value is %d\n", min_cut);
 		
@@ -501,7 +505,7 @@
 						printf("Node: %d, ", node_val); 
 						if(count<node_val){
 						//	printf("Blah\n");
-							add_edge(G, count, node_val-1); 
+							add_edge_to_graph(G, count, node_val-1); 
 						}
 					}
 				}else{
@@ -526,26 +530,26 @@
 		time_t t;
 		
 		srand((unsigned) &t);
-		printf("\nNumber of edges is....%d\n", edge_count); 
+		printf("\nNumber of edges is....%d\n", edge_list_count); 
 		int V = 200; 
 		struct graph* G = read_graph(V); 
 		
 		printf("\n\nOriginal graph....\n");
 		print_graph(G); 
 	/*	printf("\n\nCopied graph...\n"); */
-		int orig_edge_count = edge_count; 
+		int orig_edge_list_count = edge_list_count; 
 		struct graph* orig_graph = copy_graph(G, V); 
 	//	print_graph(orig_graph); 
-		struct edge* orig_edge_list = copy_edge_list(edge_head); 
-	//	print_edge_list(edge_head); 
+		struct edge* orig_edge_list = copy_edge_list(edge_list_head); 
+	//	print_edge_list(edge_list_head); 
 	//	print_edge_list(orig_edge_list); 
 			
 		int min_cut_vals[AVG_LEN];
 		
 		for(int i = 0; i<AVG_LEN; i++){
-			edge_count = orig_edge_count; 
+			edge_list_count = orig_edge_list_count; 
 			G = copy_graph(orig_graph, V); 
-			edge_head = copy_edge_list(orig_edge_list); 
+			edge_list_head = copy_edge_list(orig_edge_list); 
 			
 			//printf("\n\nGraph is...\n\n"); 
 			//print_graph(G); 
