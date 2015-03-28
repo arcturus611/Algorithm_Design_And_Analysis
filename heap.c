@@ -16,6 +16,7 @@
 	}
 	
 	int get_parent_idx(int x){
+		int parent_idx; 
 		if(x%2) parent_idx = floor(x/2);
 		else parent_idx = x/2 - 1; 
 		return parent_idx;
@@ -56,8 +57,8 @@
 	
 	void print_heap(struct heap* h){
 		int sz = h->size;
-		printf("Heap contents are...\n");
-		for(int i = 0; i<sz; i++){
+		printf("Heap size is %d, and its contents are...\n", sz);
+		for(int i = 0; i<=sz; i++){
 			printf("%d, ", h->arr[i]); 
 		}
 		printf("\n");

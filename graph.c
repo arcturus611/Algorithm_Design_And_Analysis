@@ -41,7 +41,7 @@
 			p = line; 
 			n = num;
 			line[strchr(line, '\n')- line] = '\0';
-			printf("%s, length = %d\n", line, strlen(line)); 
+//			printf("%s, length = %d\n", line, strlen(line)); 
 			
 			while(isdigit(*p)) p++; 
 			
@@ -57,7 +57,7 @@
 						*n = '\0';
 						n = num; 
 						node_val = atoi(num); 
-						printf("Node: %d, ", node_val); 
+//						printf("Node: %d, ", node_val); 
 						if(count<node_val){
 						//	printf("Blah\n");
 							add_edge_to_graph(G, count, node_val-1); 
@@ -68,7 +68,7 @@
 					p++;			
 				}
 			}
-			printf("\n"); 
+//			printf("\n"); 
 			count++;
 		}
 	

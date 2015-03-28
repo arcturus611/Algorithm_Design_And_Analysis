@@ -18,6 +18,8 @@
 	
 	struct heap* insert_in_heap(struct heap*, int); 
 	
+	void print_heap(struct heap*); 
+	
 	int extract_min_from_heap(struct heap*); 
 	
 	void delete_from_heap(struct heap*); 
