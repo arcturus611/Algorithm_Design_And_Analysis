@@ -14,6 +14,10 @@
 	};
 	
 	/* Functions */
+	int get_parent_idx(int);
+	
+	void bubble_up(int*, int, int);
+	
 	struct heap* init_heap(void); 
 	
 	struct heap* insert_in_heap(struct heap*, int); 

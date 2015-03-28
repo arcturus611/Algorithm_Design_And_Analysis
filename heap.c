@@ -22,6 +22,34 @@
 		return parent_idx;
 	}
 	
+	int get_left_child_idx(int x){
+		return x*2+1; 
+	}
+	
+	void bubble_up(int* p, int parent_idx, int new_pos){
+		//bubble up
+		while(*(p+parent_idx) > *(p + new_pos)){
+			swap(p+parent_idx, p+new_pos);
+			new_pos = parent_idx; 
+			parent_idx = get_parent_idx(parent_idx); 
+			if(parent_idx == -1) break; 
+		}
+		
+		return;
+	}
+	
+	void bubble_down(int* p, int left_child_idx, int curr_pos, int max_pos){
+		//bubble down
+		while(*(p+left_child_idx) < *(p+curr_pos)){
+			swap(p+left_child_idx, p+curr_pos);
+			curr_pos = left_child_idx; 
+			left_child_idx = get_left_child_idx(left_child_idx);
+			if(left_child_idx == max_pos) break;
+		}
+		
+		return;
+	}
+	
 	struct heap* init_heap(void){
 		struct heap* h = (struct heap *)malloc(sizeof(struct heap)); 
 		h->arr = (int* )malloc(MAX_HEAP_SIZE*sizeof(int)); 
@@ -44,15 +72,31 @@
 		if (new_pos==0) return h; 
 		//next, initialize for bubble up
 		int parent_idx = get_parent_idx(new_pos);
-		
-		while(*(p+parent_idx) > *(p + new_pos)){
-			swap(p+parent_idx, p+new_pos);
-			new_pos = parent_idx; 
-			parent_idx = get_parent_idx(parent_idx); 
-			if(parent_idx == -1) break; 
-		}
+		//and now bubble up
+		bubble_up(p, parent_idx, new_pos);
 		
 		return h;	
+	}
+	
+	int extract_min_from_heap(struct heap* h){
+		//root 
+		int min_heap = h->arr[0]; 
+		
+		//decrement size
+		(h->size)--;
+		int sz = h->size;
+		if (sz==-1) return min_heap; 
+		
+		//replace root with biggest latest-gen child (and then bubble it down)
+		int* p = h->arr; 
+		int last_child = p[sz+1]; //last child before we decremented size (this is horrible code)
+		p[0] = last_child; 
+		
+		// bubble down
+		int left_child_idx = get_left_child_idx(0); 
+		bubble_down(p, left_child_idx, 0, sz+1); 
+	 
+	 	return min_heap;
 	}
 	
 	void print_heap(struct heap* h){
