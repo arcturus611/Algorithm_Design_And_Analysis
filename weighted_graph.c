@@ -34,6 +34,8 @@
 	}
 		
 	struct weighted_graph* read_graph(int V){
+		//this is specific to the input file format, and since this code was written for 
+		//the coursera class by Tim Roughgarden, it's specific to that one. YMMV.
 		FILE* fp = NULL; 
 		fp = fopen("dijkstraData.txt", "r"); 
 		
@@ -52,7 +54,7 @@
 			n = num;
 			line[strchr(line, '\n')- line] = ' ';
 			line[strlen(line)] = '\0';
-			printf("%s, length = %d\n", line, strlen(line)); 
+			printf("%s, length = %zu\n", line, strlen(line)); 
 			
 			while(isdigit(*p)) p++; //finish reading the first node number
 			
