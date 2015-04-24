@@ -45,12 +45,12 @@
 		else{
 			if(front1->next != NULL){
 				front1 = front1->next; 
-				printf("Dequeued data is %d\n", front->idx);
+				//printf("Dequeued data is %d\n", front->idx);
 				free(front); 
 				front = front1;
 				queue_count--;
 			}else{
-				printf("Dequeued data is %d\n", front->idx);
+				//printf("Dequeued data is %d\n", front->idx);
 				free(front); 
 				front = NULL; 
 				rear = NULL; 
