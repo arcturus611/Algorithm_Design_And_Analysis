@@ -6,14 +6,10 @@
 		Implemented using path compression and union by rank
 	*/
 	
-	
+	#define MAIN_UNION_FIND_FILE
 	#include<stdio.h>
 	#include<stdlib.h>
-	
-	struct component{
-		int parent; 
-		int rank;
-	};
+	#include "union_find.h"
 	
 	struct component* create_components(int v){	
 		//create an array of n components. 
@@ -45,6 +41,7 @@
 		//union of components containing x and y
 		int xroot = find_component(comp_arr, x);
 		int yroot = find_component(comp_arr, y); 
+		printf("xroot = %d, yroot = %d\n", xroot, yroot);
 		if(comp_arr[xroot].rank<comp_arr[yroot].rank){
 			comp_arr[xroot].parent = yroot;
 		}else if(comp_arr[xroot].rank<comp_arr[yroot].rank){
@@ -84,17 +81,17 @@
 			switch (ch)
 			{
 			case 1:
-			    printf("Enter data : ");
+			    printf("How many components? : ");
 			    scanf("%d", &x);
 			    A = create_components(x);
 			    break;
 			case 2:
-			    printf("Enter data : ");
+			    printf("Which component do you want to find? (0 to N-1) : ");
 			    scanf("%d", &x);
 			    printf("Parent of %d is %d\n", x, find_component(A, x));
 			    break;
 			case 3:
-			    printf("Enter data: "); 
+			    printf("Which components to merge? (indices): "); 
 			    scanf("%d %d", &x, &y); 
 			    union_components(A, x, y); 
 			    break;
